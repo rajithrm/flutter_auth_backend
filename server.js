@@ -5,6 +5,7 @@ const app = express();
 const mongoose = require("mongoose");
 const User = require("./models/userModel")
 const jwt = require("jsonwebtoken");
+const protect = require("./middleware/authMiddleware");
 
 app.use (express.json());
 
@@ -78,6 +79,12 @@ app.post("/api/login", async (req,res) => {
         res.status(500).json({ message: "Server Error" });
     }
 });
+
+app.get("/api/profile", protect, async (req,res) => {
+    const user = await User.findById(req.user).select("-password");
+
+    res.json(user);
+})
 
 const PORT = process.env.PORT || 3000;
 
